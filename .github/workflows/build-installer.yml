@@ -1,0 +1,58 @@
+name: Build Chinese Installer
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Inno Setup
+        run: choco install innosetup --no-progress -y
+
+      - name: Download official Diffusion Studio installer
+        run: |
+          $url = "https://github.com/diffusionstudio/editor/releases/download/v0.207.0/Diffusion-Studio-x64-Setup.exe"
+          Invoke-WebRequest -Uri $url -OutFile official-setup.exe
+
+      - name: Extract app files
+        run: |
+          7z x official-setup.exe -oextracted
+          $nupkg = Get-ChildItem -Path extracted -Filter *.nupkg | Select-Object -First 1
+          7z x $nupkg.FullName -oapp-pkg
+          # app-pkg/lib/net45 = full program dir
+          if (-not (Test-Path "app-pkg/lib/net45/Diffusion Studio.exe")) { throw "app files not found" }
+
+      - name: Apply Chinese patch
+        run: |
+          Copy-Item -Recurse "app-pkg/lib/net45" "final_app"
+          python work/apply_zh.py --app final_app/resources/app
+          # syntax check
+          node --check final_app/resources/app/web/assets/index-aZSYMEsA.js
+          node --check final_app/resources/app/dist/main.js
+
+      - name: Compile Inno Setup installer
+        run: |
+          & "C:\Program Files (x86)\Inno Setup 6\ISCC.exe" installer/diffusion-studio-zh.iss
+
+      - name: Upload installer artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Diffusion-Studio-zh-CN-Setup
+          path: installer/output/*.exe
+
+      - name: Publish to Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: installer/output/*.exe
