@@ -22,7 +22,7 @@ jobs:
 
       - name: Download official Diffusion Studio installer
         run: |
-          $url = "https://github.com/diffusionstudio/editor/releases/download/v0.207.0/Diffusion-Studio-x64-Setup.exe"
+          $url = "https://github.com/diffusionstudio/editor/releases/download/v0.209.1/Diffusion-Studio-x64-Setup.exe"
           Invoke-WebRequest -Uri $url -OutFile official-setup.exe
 
       - name: Extract app files
@@ -37,8 +37,8 @@ jobs:
         run: |
           Copy-Item -Recurse "app-pkg/lib/net45" "final_app"
           python work/apply_zh.py --app final_app/resources/app
-          # syntax check
-          node --check final_app/resources/app/web/assets/index-aZSYMEsA.js
+          # syntax check (bundle hashes change per release: check them all)
+          Get-ChildItem -Path "final_app/resources/app/web/assets/index-*.js" | ForEach-Object { node --check $_.FullName }
           node --check final_app/resources/app/dist/main.js
 
       - name: Compile Inno Setup installer

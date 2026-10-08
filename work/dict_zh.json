@@ -1462,5 +1462,19 @@
  "A one-line title is required.": "需要单行标题。",
  "(no output)": "（无输出）",
  ", input.logs.join(": "__KEEP__",
- "gh auth login": "__KEEP__"
+ "gh auth login": "__KEEP__",
+ "Add files": "添加文件",
+ "Add transition": "添加转场",
+ "Cancel Export": "取消导出",
+ "Continue": "继续",
+ "Don't show again": "不再显示",
+ "Filter fonts": "筛选字体",
+ "Google fonts": "Google 字体",
+ "Installed by you": "已安装",
+ "Popular fonts": "热门字体",
+ "Remove transition": "移除转场",
+ "Stop export": "停止导出",
+ "Stop exporting?": "停止导出？",
+ "The export is still in progress. You'll need to start over if you stop now.": "导出仍在进行中。如果现在停止，需要重新开始。",
+ "This action is permanent and cannot be undone. All your projects, data, and settings will be permanently removed.": "此操作不可逆，将永久删除你的所有项目、数据和设置。"
 }

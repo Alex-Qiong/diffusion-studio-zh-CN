@@ -10,7 +10,7 @@ Safety rules per string-literal occurrence (renderer):
 - skip hostElement registrations: hr("Member")
 - getNextName (minified ad) call args use OVERRIDES (noun forms)
 """
-import re, json, sys, os, argparse
+import re, json, sys, os, argparse, glob
 
 WORK = os.path.dirname(os.path.abspath(__file__))
 _ap = argparse.ArgumentParser()
@@ -39,7 +39,8 @@ MAIN_REPLACEMENTS = [
     ('"Use anyway"', '"仍要使用"'),
 ]
 # updater call site -> no-op (must not self-update back to official English build)
-UPDATER_RE = re.compile(r'\(0,\s*import_update_electron_app\.updateElectronApp\)\(\{\s*repo:\s*"diffusionstudio/editor"\s*\}\);?')
+# the call may carry extra options (e.g. onNotifyUser), so match braces
+UPDATER_CALL = '(0, import_update_electron_app.updateElectronApp)('
 
 # --- JS literal scanner (handles nested ${} in template literals) ---
 _REGEX_PRECEDERS = set('(,=:[!&|?{};+-*%<>^~')
@@ -303,11 +304,12 @@ def patch_file(path, mapping, stats, allow_getnextname=True):
 
 def main():
     stats = {'skipped_reasons': {}, 'replaced_keys': set(), 'overrides': 0}
-    renderer_files = [
-        os.path.join(APP, 'web/assets/index-aZSYMEsA.js'),
-        os.path.join(APP, 'web/assets/index-DXSZDER1.js'),
-        os.path.join(APP, 'web/assets/index-CK89WP--.js'),
-    ]
+    # renderer bundles: discover by pattern (hashes change per release);
+    # skip the Google Fonts catalog (font names must stay as-is)
+    renderer_files = sorted(glob.glob(os.path.join(APP, 'web/assets/index-*.js')))
+    if not renderer_files:
+        print('ERROR: no web/assets/index-*.js found under', APP)
+        sys.exit(1)
     total_r = total_s = 0
     for f in renderer_files:
         r, sk = patch_file(f, DICT, stats)
@@ -327,9 +329,27 @@ def main():
     print(f'main.js (targeted): replaced={mr}')
     # disable auto-updater
     t = open(main_js, encoding='utf-8').read()
-    t2, n = UPDATER_RE.subn('void 0;', t)
+    n = 0
+    pos = 0
+    while True:
+        i = t.find(UPDATER_CALL, pos)
+        if i < 0:
+            break
+        j = i + len(UPDATER_CALL)
+        while j < len(t) and t[j] in ' \t\r\n':
+            j += 1
+        if j >= len(t) or t[j] != '{':
+            pos = j
+            continue
+        e = _scan_expr(t, j + 1)  # just past matching '}'
+        if e is None or e >= len(t) or t[e] != ')':
+            pos = j + 1
+            continue
+        t = t[:i] + 'void 0' + t[e + 1:]
+        n += 1
+        pos = i + 6
     if n:
-        open(main_js, 'w', encoding='utf-8').write(t2)
+        open(main_js, 'w', encoding='utf-8').write(t)
         print(f'main.js: updater disabled ({n} call site)')
     else:
         print('main.js: WARNING updater call site not found!')

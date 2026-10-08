@@ -1,6 +1,6 @@
-; Diffusion Studio v0.207.0 简体中文版 - Inno Setup 脚本
+; Diffusion Studio v0.209.1 简体中文版 - Inno Setup 脚本
 #define MyAppName "Diffusion Studio"
-#define MyAppVersion "0.207.0"
+#define MyAppVersion "0.209.1"
 #define MyAppPublisher "Diffusion Studio"
 #define MyAppURL "https://github.com/diffusionstudio/editor"
 #define MyAppExeName "Diffusion Studio.exe"
@@ -20,7 +20,7 @@ DisableProgramGroupPage=yes
 LicenseFile=..\final_app\LICENSE
 InfoBeforeFile=简体中文版说明.txt
 OutputDir=output
-OutputBaseFilename=Diffusion-Studio-v0.207.0-zh-CN-x64-Setup
+OutputBaseFilename=Diffusion-Studio-v0.209.1-zh-CN-x64-Setup
 Compression=lzma2/ultra64
 SolidCompression=yes
 WizardStyle=modern
