@@ -56,3 +56,6 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: installer/output/*.exe
+          # GITHUB_TOKEN is read-only in this repo; use the stored PAT so
+          # tag builds can publish releases automatically
+          token: ${{ secrets.RELEASE_PAT }}
