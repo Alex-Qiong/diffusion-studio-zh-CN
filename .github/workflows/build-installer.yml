@@ -22,7 +22,7 @@ jobs:
 
       - name: Download official Diffusion Studio installer
         run: |
-          $url = "https://github.com/diffusionstudio/editor/releases/download/v0.209.1/Diffusion-Studio-x64-Setup.exe"
+          $url = "https://github.com/diffusionstudio/editor/releases/download/v0.210.0/Diffusion-Studio-x64-Setup.exe"
           Invoke-WebRequest -Uri $url -OutFile official-setup.exe
 
       - name: Extract app files
