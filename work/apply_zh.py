@@ -22,7 +22,8 @@ DICT = {k: v for k, v in json.load(open(os.path.join(WORK, 'dict_zh.json'), enco
         if v != '__KEEP__'}
 
 # noun forms for getNextName() default layer names (minified name: ad)
-OVERRIDES = {('ad', 'Group'): '组', ('ad', 'Rect'): '矩形'}
+OVERRIDES = {('ad', 'Group'): '组', ('ad', 'Rect'): '矩形',
+             ('tr', 'Group'): '组', ('tr', 'Rect'): '矩形'}
 
 # main.js: targeted raw-text replacements (dialog strings; template literals kept intact)
 MAIN_REPLACEMENTS = [
@@ -283,14 +284,15 @@ def patch_file(path, mapping, stats, allow_getnextname=True):
             skipped += 1
             stats['skipped_reasons'][reason] = stats['skipped_reasons'].get(reason, 0) + 1
             continue
-        # getNextName override: ad("Group") etc. (ad may have earlier args)
+        # getNextName override: ad("Group") / tr("Group") etc. (callee name
+        # changes per release; OVERRIDES whitelists exact (callee, string) pairs)
         before = text[max(0, s - 24):s]
         after = text[e:e + 2]
         zh = mapping[logical]
-        if allow_getnextname and re.search(r'\bad\([^()]*$', before) and after.startswith(')'):
-            key = ('ad', logical)
-            if key in OVERRIDES:
-                zh = OVERRIDES[key]
+        if allow_getnextname and after.startswith(')'):
+            m = re.search(r'\b([A-Za-z_$][\w$]*)\([^()]*$', before)
+            if m and (m.group(1), logical) in OVERRIDES:
+                zh = OVERRIDES[(m.group(1), logical)]
                 stats['overrides'] += 1
         new_raw = q + js_escape(zh, q) + q
         out.append(text[pos:s])
