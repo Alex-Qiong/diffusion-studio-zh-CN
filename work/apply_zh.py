@@ -22,8 +22,10 @@ DICT = {k: v for k, v in json.load(open(os.path.join(WORK, 'dict_zh.json'), enco
         if v != '__KEEP__'}
 
 # noun forms for getNextName() default layer names (minified name: ad)
+# factory name changes per release: ad (<=0.210) -> tr (0.211) -> er (0.216)
 OVERRIDES = {('ad', 'Group'): '组', ('ad', 'Rect'): '矩形',
-             ('tr', 'Group'): '组', ('tr', 'Rect'): '矩形'}
+             ('tr', 'Group'): '组', ('tr', 'Rect'): '矩形',
+             ('er', 'Group'): '组', ('er', 'Rect'): '矩形'}
 
 # main.js: targeted raw-text replacements (dialog strings; template literals kept intact)
 MAIN_REPLACEMENTS = [

@@ -1,12 +1,12 @@
 # Diffusion Studio 简体中文版 (Windows)
 
-基于官方 [diffusionstudio/editor](https://github.com/diffusionstudio/editor) v0.211.0
+基于官方 [diffusionstudio/editor](https://github.com/diffusionstudio/editor) v0.216.0
 Windows x64 制作的简体中文版。
 
 ## 下载
 
 到 [Releases](../../releases) 页面下载
-`Diffusion-Studio-v0.211.0-zh-CN-x64-Setup.exe`，中文安装向导，
+`Diffusion-Studio-v0.216.0-zh-CN-x64-Setup.exe`，中文安装向导，
 带开始菜单、可选桌面快捷方式、卸载程序。
 
 ## 汉化内容
@@ -28,6 +28,6 @@ GitHub Actions 在 Windows 上自动完成：下载官方安装包 → 解包 �
 
 ```text
 work/apply_zh.py      汉化补丁脚本（字符串扫描 + 安全替换）
-work/dict_zh.json     英→简体中文词典（1632 条）
+work/dict_zh.json     英→简体中文词典（1783 条）
 installer/diffusion-studio-zh.iss   Inno Setup 脚本（中文向导）
 ```
